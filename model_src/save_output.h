@@ -50,15 +50,39 @@ bool saveChemistryOutput(
 
   if (!file.fail())
   {
-    file << std::setw(16) << std::left << "#p(bar)" << "\t"
-         << std::setw(16) << std::left << "T(K)" << "\t"
-         << std::setw(16) << std::left << "n_<tot>(cm-3)" << "\t"
-         << std::setw(16) << std::left << "n_g(cm-3)" << "\t"
-         << std::setw(16) << std::left << "m(u)";
+    file << std::setw(16) << std::left << "Pbar" << "\t"
+         << std::setw(16) << std::left << "Tk" << "\t"
+         << std::setw(16) << std::left << "n_<tot>" << "\t"
+         << std::setw(16) << std::left << "n_g" << "\t"
+         << std::setw(16) << std::left << "mu";
 
-    for (size_t i=0; i<nb_species; i++)
-      file << "\t" << std::setw(16) << std::left << species_symbols[i];
+    //for (size_t i=0; i<nb_species; i++)
+     // file << "\t" << std::setw(16) << std::left << species_symbols[i];
 
+    for (size_t i = 0; i < nb_species; i++) {
+        std::string modifiedSymbol = species_symbols[i];
+    
+        // Check if the symbol is 'e-', which represents an electron
+        if (modifiedSymbol != "e-") {
+            // Remove '1' from the species symbol
+            modifiedSymbol.erase(std::remove(modifiedSymbol.begin(), modifiedSymbol.end(), '1'), modifiedSymbol.end());
+            // Changing ion notation to match HELIOS
+            size_t symbolLength = modifiedSymbol.length();
+            char lastChar = modifiedSymbol[symbolLength - 1];
+            if (lastChar == '+') {
+                modifiedSymbol[symbolLength - 1] = '_';
+                modifiedSymbol += "p";
+            } else if (lastChar == '-') {
+                modifiedSymbol[symbolLength - 1] = '_';
+                modifiedSymbol += "m"; 
+            }
+        }
+    
+        file << "\t" << std::setw(16) << std::left << modifiedSymbol;
+    }
+
+      
+    
     file << "\n";
 
     for (size_t i=0; i<input.pressure.size(); i++)
@@ -108,8 +132,8 @@ bool saveCondOutput(
 
   if (!file.fail())
   {
-    file << std::setw(16) << std::left << "#p(bar)" << "\t"
-         << std::setw(16) << std::left << "T(K)";
+    file << std::setw(16) << std::left << "#p (bar)" << "\t"
+         << std::setw(16) << std::left << "T (K)";
 
     for (size_t i=0; i<nb_elements; i++)
       file << "\t" << std::setw(16) << std::left << element_symbols[i];
@@ -163,17 +187,17 @@ bool saveMonitorOutput(
 
   if (!file.fail())
   {
-    file << std::setw(16) << std::left << "#grid_point" << "\t"
+    file << std::setw(16) << std::left << "#grid point" << "\t"
          << std::setw(16) << std::left << "iterations" << "\t"
          << std::setw(16) << std::left << "chem_iter" << "\t"
          << std::setw(16) << std::left << "cond_iter" << "\t"
          << std::setw(16) << std::left << "converged" << "\t"
          << std::setw(16) << std::left << "elem_conserved" << "\t"
-         << std::setw(16) << std::left << "p(bar)" << "\t"
-         << std::setw(16) << std::left << "T(K)" << "\t"
-         << std::setw(16) << std::left << "n_<tot>(cm-3)" << "\t"
-         << std::setw(16) << std::left << "n_g(cm-3)" << "\t"
-         << std::setw(16) << std::left << "m(u)";
+         << std::setw(16) << std::left << "p (bar)" << "\t"
+         << std::setw(16) << std::left << "T (K)" << "\t"
+         << std::setw(16) << std::left << "n_<tot> (cm-3)" << "\t"
+         << std::setw(16) << std::left << "n_g (cm-3)" << "\t"
+         << std::setw(16) << std::left << "m (u)";
     
     for (unsigned int i=0; i<nb_elements; i++)
       file << "\t" << std::setw(5) << std::left << element_symbols[i];
